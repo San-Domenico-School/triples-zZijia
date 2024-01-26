@@ -25,7 +25,7 @@ public class Scorekeeper
         }
         else 
         {
-            score += 27; 
+            score += 1; 
         } 
     }
     
