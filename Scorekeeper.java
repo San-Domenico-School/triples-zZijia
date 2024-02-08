@@ -17,21 +17,17 @@ public class Scorekeeper
     
     public static void updateScore()
     {
-        long currentTime = System.currentTimeMillis();
-        long timeElapsed = currentTime - startTime; 
-        if (timeElapsed > 0) 
+        int timePassed = (int)((System.currentTimeMillis() - startTime) / 1000);
+        int points = deckSize - timePassed;  
+        if(points > 0)
         {
-            score += 1000 / timeElapsed; 
+            score += points;
         }
-        else 
-        {
-            score += 1; 
-        } 
+        startTime = System.currentTimeMillis();
     }
     
     public static int getScore()
     {
         return score;
     }
-    
 }

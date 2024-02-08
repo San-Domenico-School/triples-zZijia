@@ -1,86 +1,110 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
-
+import java.util.ArrayList; 
 /**
  * Write a description of class Dealer here.
  * 
  * Leo Li
- * Jan 25， 2024
+ * Feb 7, 2024
  */
 public class Dealer extends Actor
 {
-    private int numCardsInDeck;
-    private int tripleRemaining;
-    private Deck deck;
-    private ArrayList<Card> cardsOnBoard; 
-    private ArrayList<Integer> selectedCardsIndex;
-    private Card[] cardsSelected;
-    
+    /**
+     * Act - do whatever the Dealer wants to do. This method is called whenever
+     * the 'Act' or 'Run' button gets pressed in the environment.
+     */
+    private Deck deck; 
+    private int triplesRemaining;
     public Dealer(int numCardsInDeck)
     {
-        this.numCardsInDeck = numCardsInDeck;
-        this.tripleRemaining = numCardsInDeck / 3;
-        this.deck = new Deck(numCardsInDeck);
-        this.cardsSelected = new Card[3];
+        deck = new Deck(numCardsInDeck);
+        triplesRemaining = numCardsInDeck / 3;
+        Scorekeeper.setDeckSize(numCardsInDeck);
     }
     
     public void addedToWorld(World world)
     {
         dealBoard();
-        setUI();
     }
-    
-    public void dealBoard() 
+        
+    protected void dealBoard()
     {
-        Greenfoot.playSound("shuffle.wav");
-    
-        for (int row = 0; row < 3; row++) 
+        for(int row = 0; row < 5; row++)
         {
-            for (int col = 0; col < 5; col++) 
+            for(int column = 0; column < 3; column++)
             {
-                Card card = deck.getTopCard(); 
-                if (card != null) 
-                {
-                    getWorld().addObject(card, row * 130 + 80, col * 80 + 60);
-                }
+                getWorld().addObject(deck.getTopCard(),80 + column * 130,80 + row * 80);
             }
         }
-    }   
-    
-    public void setUI() 
-    {
-    
-        int cardsRemaining = deck.getNumCardsInDeck();
-        int recentScore = Scorekeeper.getScore();
-        String recentScoreString = Integer.toString(recentScore);
-        String cardsRemainingString = Integer.toString(cardsRemaining);
-        getWorld().showText(cardsRemainingString, 310, 470);
-        getWorld().showText(recentScoreString, 310, 505);
-    
+               
     }
+    
+    private void setUI()
+    {
+        String cardsRemainingText = new Integer(triplesRemaining * 3).toString();
+        String scoreText = new Integer(Scorekeeper.getScore()).toString();
+        getWorld().showText(cardsRemainingText, 310, 470);
+        getWorld().showText(scoreText, 310, 504); 
+    } 
+    
+    protected void checkIfEndGame()
+    {
+        if(triplesRemaining == 0)
+        {
+            Greenfoot.stop();
+            getWorld().showText("You won!", 215, 300);
+        }
+    }
+    
+    protected void checkIfTriple(ArrayList<Card> cardsOnBoard, Card[]cardsSelected, ArrayList<Integer> selectedCardsIndex)
+    {
+        int shapes = cardsSelected[0].getShape().ordinal() + cardsSelected[1].getShape().ordinal() + cardsSelected[2].getShape().ordinal();
+        
+        int shadings = cardsSelected[0].getShading() + cardsSelected[1].getShading() + cardsSelected[2].getShading();
+        
+        int colors = cardsSelected[0].getColor().ordinal() + cardsSelected[1].getColor().ordinal() + cardsSelected[2].getColor().ordinal();
+        
+        int numberOfShapes = cardsSelected[0].getNumberOfShapes() + cardsSelected[1].getNumberOfShapes() + cardsSelected[2].getNumberOfShapes();
+        
+        
+        if(shapes % 3 == 0 && shadings % 3 == 0 && colors % 3 == 0)
+        {
+            removeAndReplaceTriple(cardsOnBoard, cardsSelected, selectedCardsIndex);
+        }
+        else
+        {
+            Animations.wobble(cardsSelected);
+        }
+    }
+    
+    private void removeAndReplaceTriple(ArrayList<Card> cardsOnBoard, Card[] cardsSelected, 
+                                    ArrayList<Integer> selectedCardsIndex)
+    {
+       int[][] cardsXYCoordinate = new int[3][2];  
+       for(int card = 0; card < 3; card++)
+       {
+            cardsXYCoordinate[card][0] = cardsSelected[card].getX();
+            cardsXYCoordinate[card][1] = cardsSelected[card].getY();
+       }    
+       Animations.slideAndTurn(cardsSelected);     
+       for(int card = 0; card < 3; card++)
+       { 
+           getWorld().removeObject(cardsSelected[card]);
+           if(deck.getNumCardsInDeck() > 0)
+           {
+               cardsOnBoard.set(selectedCardsIndex.get(card),deck.getTopCard());
+               getWorld().addObject(cardsOnBoard.get(selectedCardsIndex.get(card)), 
+                                                     cardsXYCoordinate[card][0], 
+                                                     cardsXYCoordinate[card][1]);
+           }
+       }
+       
+       triplesRemaining--;
+       Scorekeeper.updateScore();
+       setUI();
+       checkIfEndGame(); 
 
-    
-    public void endGame()
-    {
-    
     }
     
-    public void checkIfTriple()
-    {
-    
-    }
-    
-    public void actionIfTriple()
-    {
-    
-    }
-    
-    public void setCardsSelected(ArrayList<Card> cards, ArrayList<Integer> indices, Card[] selectedCards)
-    {
-    
-    }
-    
+   
     
 }

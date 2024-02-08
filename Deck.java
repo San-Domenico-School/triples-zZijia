@@ -1,30 +1,64 @@
-/**
- * Implementation of Deck class.
- * 
- * @Leo Li 
- * @Jan 22, 2024
- */
-
-import greenfoot.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
+import greenfoot.*;
 
-
-public class Deck 
-{
-    private Card[] unShuffledDeck;
-    private ArrayList<Card> shuffledDeck; 
+public class Deck
+{  
+    private ArrayList<Card> shuffledDeck;
+    private Card[] unShuffledDeck; 
     
-    public Deck(int numOfCardsInDeck) 
+    Deck(int numOfCardsInDeck)
     {
-        numOfCardsInDeck = limitNumCardsInDeck(numOfCardsInDeck);
-        unShuffledDeck = new Card[numOfCardsInDeck + 1];
-        shuffledDeck = new ArrayList<>();
-        populateUnshuffledDeckWithCards(numOfCardsInDeck);
-        createShuffledDeck();
+        numOfCardsInDeck = limitNumCardsInDeck(numOfCardsInDeck);     
+        unShuffledDeck = new Card[numOfCardsInDeck + 1];          
+        shuffledDeck = new ArrayList<>();                         
+        populateUnshuffledDeckWithCards(numOfCardsInDeck);       
+        createShuffledDeck();                                      
+    }
+    
+    public int getNumCardsInDeck()
+    {
+        return shuffledDeck.size(); 
+    }
+    
+    public Card getTopCard()
+    {
+        return shuffledDeck.remove(0); 
+    }
+    
+    //returns a card at a specific location in the deck
+    public Card getShuffledCard(int numOfCardsInDeck)
+    {
+        return shuffledDeck.get(numOfCardsInDeck);
     }
 
+    public ArrayList<Card> getShuffledDeck()
+    {
+        return shuffledDeck;
+    }
+    
+
+    public int limitNumCardsInDeck(int numOfCardsInDeck)
+    {
+        if(numOfCardsInDeck <= 27)
+        {
+            return 27;
+        }
+        else
+        {
+            return 81; 
+        }
+    }
+    
+    
+    public void createShuffledDeck()
+    {
+        for(int i = 0; i < unShuffledDeck.length; i++)
+        {
+            shuffledDeck.add((int) (Math.random() * shuffledDeck.size()), unShuffledDeck[i]);
+        }
+        shuffledDeck.remove(shuffledDeck.size() - 1);
+    }
+    
     
     private void populateUnshuffledDeckWithCards(int numOfCardsInDeck)        
     {
@@ -280,68 +314,6 @@ public class Deck
                         new GreenfootImage("Triplets_2/triangle_red_3_2_selected.png"));
                 }
           }
-    }
-    
-    public int getNumCardsInDeck() 
-    { 
-        return shuffledDeck.size();
-    }
- 
-    public Card getTopCard() 
-    { 
-        if (!shuffledDeck.isEmpty()) 
-        {
-            return shuffledDeck.remove(0); 
-        }
-        return null; 
-    }
-    
-    public Card getShuffledCard(int index) 
-    {  
-        if (index >= 0 && index < shuffledDeck.size()) 
-        {
-            return shuffledDeck.get(index);
-        }
-        return null; 
-    }
-
-    public ArrayList<Card> getShuffledDeck() 
-    { 
-        return shuffledDeck;
-    }
-
-    public int limitNumCardsInDeck(int num) 
-    {
-        if (num <= 27) 
-        {
-            return 27;
-        }    
-        else 
-        {
-            return 81;
-        }
-    }
-
-    
-
-    public void createShuffledDeck() 
-    {
-        shuffledDeck = new ArrayList<Card>();
-
-        List<Integer> indices = new ArrayList<Integer>();
-        for (int i = 1; i < unShuffledDeck.length; i++) 
-        { 
-            indices.add(i);
-        }
-
-        Collections.shuffle(indices);
-
-        for (int index : indices) 
-        {
-            shuffledDeck.add(unShuffledDeck[index]);
-        }   
-    }
-
-
-
+    }    
 }
+
